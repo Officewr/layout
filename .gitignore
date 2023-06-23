@@ -6,7 +6,12 @@ Sub マクロ名()
     
     ' フォルダの作成
     commandPath = "D:\テーブル作成コマンドフォルダ\"
-    MkDir commandPath
+
+    ' FileSystemObjectを使用してフォルダを作成
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If Not fso.FolderExists(commandPath) Then
+        fso.CreateFolder commandPath
+    End If
     
     ' テキストファイルの作成
     outputPath = commandPath & "01_テーブル確認.txt"
