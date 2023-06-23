@@ -1,6 +1,4 @@
--
 Sub マクロ名()
-
     Dim commandPath As String
     Dim outputPath As String
     
@@ -39,45 +37,57 @@ Sub マクロ名()
         ' 処理1
         outputPath = commandPath & "01_テーブル確認.txt"
         Open outputPath For Append As #1
-        Write #1, Range("J7:J8").Value
+        For Each cell In Range("J7:J8")
+            Write #1, cell.Value
+        Next cell
         Close #1
         
         ' 処理2
         outputPath = commandPath & "02_ロール割当の確認.txt"
         Open outputPath For Append As #1
-        Write #1, Range("J12:J24").Value
+        For Each cell In Range("J12:J24")
+            Write #1, cell.Value
+        Next cell
         Close #1
         
         ' 処理3
         outputPath = commandPath & "03_ロードジョブ定義登録.txt"
         Open outputPath For Append As #1
-        Write #1, Range("J29:J30").Value
+        For Each cell In Range("J29:J30")
+            Write #1, cell.Value
+        Next cell
         Close #1
         
         ' 処理4
         outputPath = commandPath & "04_HULFT定義登録.txt"
         Open outputPath For Append As #1
-        Write #1, Range("J36:J40").Value
+        For Each cell In Range("J36:J40")
+            Write #1, cell.Value
+        Next cell
         Close #1
     ElseIf Range("M10").Value = "変更" And Range("M11").Value = "テーブル" And Range("M15").Value = "営業統計オンライン利用なし" And Range("M24").Value = "全件ロード方式" Then
         ' 処理1
         outputPath = commandPath & "01_テーブル確認.txt"
         Open outputPath For Append As #1
-        Write #1, Range("V7:V8").Value
+        For Each cell In Range("V7:V8")
+            Write #1, cell.Value
+        Next cell
         Close #1
         
         ' 処理2
         outputPath = commandPath & "02_ロール割当の確認.txt"
         Open outputPath For Append As #1
-        Write #1, Range("V12:V24").Value
+        For Each cell In Range("V12:V24")
+            Write #1, cell.Value
+        Next cell
         Close #1
         
         ' 処理3
         outputPath = commandPath & "05_GRANT分の作成.txt"
         Open outputPath For Append As #1
-        Write #1, Range("V28:V40").Value
+        For Each cell In Range("V28:V40")
+            Write #1, cell.Value
+        Next cell
         Close #1
     End If
-
 End Sub
--
