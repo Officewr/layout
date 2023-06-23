@@ -91,3 +91,45 @@ Sub マクロ名()
         Close #1
     End If
 End Sub
+
+
+
+    ' フォルダの作成
+    commandPath = "D:\テーブル作成コマンドフォルダ\"
+
+    ' FileSystemObjectを使用してフォルダが存在しない場合にのみ作成
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If Not fso.FolderExists(commandPath) Then
+        fso.CreateFolder commandPath
+        
+        ' テキストファイルの作成
+        outputPath = commandPath & "01_テーブル確認.txt"
+        If Not fso.FileExists(outputPath) Then
+            Open outputPath For Append As #1
+            Close #1
+        End If
+        
+        outputPath = commandPath & "02_ロール割当の確認.txt"
+        If Not fso.FileExists(outputPath) Then
+            Open outputPath For Append As #1
+            Close #1
+        End If
+        
+        outputPath = commandPath & "03_ロードジョブ定義登録.txt"
+        If Not fso.FileExists(outputPath) Then
+            Open outputPath For Append As #1
+            Close #1
+        End If
+        
+        outputPath = commandPath & "04_HULFT定義登録.txt"
+        If Not fso.FileExists(outputPath) Then
+            Open outputPath For Append As #1
+            Close #1
+        End If
+        
+        outputPath = commandPath & "05_GRANT分の作成.txt"
+        If Not fso.FileExists(outputPath) Then
+            Open outputPath For Append As #1
+            Close #1
+        End If
+    End If
