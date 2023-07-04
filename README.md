@@ -1,4 +1,5 @@
 Sub フォルダ一覧取得()
+
     Dim フォルダパス As String
     Dim 出力シート As Worksheet
     Dim フォルダ一覧() As Variant
@@ -47,4 +48,5 @@ Sub フォルダ一覧取得()
         
         Set GetFolders = フォルダ一覧
     End Function
+    
 End Sub
