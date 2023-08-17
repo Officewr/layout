@@ -1,3 +1,49 @@
+Sub MergeDataFromExcelFiles()
+    Dim FolderPath As String
+    Dim FileName As String
+    Dim wb As Workbook
+    Dim wsSource As Worksheet
+    Dim wsDest As Worksheet
+    Dim LastRow As Long, DestLastRow As Long
+    
+    ' マージ対象のフォルダを指定
+    FolderPath = "C:\YourFolderPath\" ' フォルダのパスを指定
+    
+    ' マージ先のシートを指定
+    Set wsDest = ThisWorkbook.Sheets("MergedData") ' マージ先のシート名を指定
+    
+    ' フォルダ内のファイルを繰り返し処理
+    FileName = Dir(FolderPath & "*.xlsx")
+    Do While FileName <> ""
+        Set wb = Workbooks.Open(FolderPath & FileName)
+        Set wsSource = wb.Sheets(1) ' マージ元のシートを指定
+        
+        ' マージ元のデータを最終行まで繰り返し処理
+        LastRow = wsSource.Cells(wsSource.Rows.Count, "H").End(xlUp).Row
+        For i = 5 To LastRow ' ヘッダーを含まない行である4行目から開始
+            If wsSource.Cells(i, "H").Value <> "対応不要" And wsSource.Cells(i, "H").Value <> "" Then
+                DestLastRow = wsDest.Cells(wsDest.Rows.Count, "A").End(xlUp).Row + 1
+                wsSource.Range("A" & i & ":H" & i).Copy wsDest.Range("A" & DestLastRow)
+            End If
+        Next i
+        
+        wb.Close SaveChanges:=False
+        FileName = Dir
+    Loop
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 Sub マクロ名()
     Dim commandPath As String
     Dim outputPath As String
