@@ -50,3 +50,60 @@ Sub フォルダ一覧取得()
     End Function
     
 End Sub
+
+
+
+20230829
+Sub マクロを実行()
+    Dim mainFolder As String
+    Dim ws As Worksheet
+    Dim folderName As String
+    Dim wordApp As Object
+    Dim wordDoc As Object
+    Dim table As Object
+    Dim newRow As Long
+    
+    ' シート名 "Sheet1" を集計シート名に適宜変更
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    
+    ' 格納先フォルダを取得
+    mainFolder = Range("A1").Value
+    
+    ' フォルダ名行
+    newRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row + 1
+    folderName = Mid(mainFolder, InStrRev(mainFolder, "\") + 1)
+    ws.Cells(newRow, 1).Value = folderName
+    
+    ' Wordアプリケーションを起動
+    Set wordApp = CreateObject("Word.Application")
+    
+    ' フォルダ内のファイルを処理
+    fileName = Dir(mainFolder & "\*.docx")
+    Do While fileName <> ""
+        ' Wordドキュメントを開く
+        Set wordDoc = wordApp.Documents.Open(mainFolder & "\" & fileName)
+        
+        ' DAVコピー
+        For Each para In wordDoc.Paragraphs
+            If InStr(para.Range.Text, "DAV") > 0 Then
+                ws.Cells(newRow, 2).Value = para.Range.Text
+                Exit For
+            End If
+        Next para
+        
+        ' 表コピー
+        For Each table In wordDoc.Tables
+            ws.Cells(newRow, 3).Value = table.Columns(1).Cells(2).Range.Text
+            Exit For
+        Next table
+        
+        ' 次のファイルへ
+        wordDoc.Close
+        fileName = Dir
+    Loop
+    
+    ' Wordアプリケーションを終了
+    wordApp.Quit
+    
+    MsgBox "処理が完了しました。"
+End Sub
