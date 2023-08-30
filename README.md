@@ -49,6 +49,7 @@ End Sub
 ---------------
 
 Sub AggregateData()
+
     Dim wsSettings As Worksheet
     Dim wsAggregate As Worksheet
     Dim folderPath As String
