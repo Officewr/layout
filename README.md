@@ -23,9 +23,6 @@ Sub AggregateData()
         folderPath = wsSettings.Cells(row, 1).Value
         destRow = wsAggregate.Cells(wsAggregate.Rows.Count, "A").End(xlUp).Row + 1
         
-        ' 集計シートへフォルダ名を記入
-        wsAggregate.Cells(destRow, 1).Value = folderPath
-        
         ' 該当ワードファイルを開く
         fileName = "脆弱性調査シート.doc"
         targetFile = folderPath & "\" & fileName
@@ -35,23 +32,30 @@ Sub AggregateData()
         Set wordDoc = wordApp.Documents.Open(targetFile)
         
         ' ワードファイル内のテキストを検索して集計シートへコピー
+        Dim cevText As String
         For Each para In wordDoc.Paragraphs
             If InStr(para.Range.Text, "CEV-") > 0 Then
-                wsAggregate.Cells(destRow, 2).Value = wsAggregate.Cells(destRow, 2).Value & para.Range.Text
+                cevText = cevText & para.Range.Text & vbNewLine
             End If
         Next para
         
-        ' 対象システム列を追記
+        ' テーブルを検索して「対象システム」列を取得
+        Dim systemText As String
         For Each table In wordDoc.Tables
             For r = 1 To table.Rows.Count
                 For c = 1 To table.Columns.Count
                     If InStr(table.Cell(r, c).Range.Text, "対象システム") > 0 Then
-                        wsAggregate.Cells(destRow, 3).Value = table.Cell(r, c + 1).Range.Text
+                        systemText = table.Cell(r, c + 1).Range.Text
                         Exit For
                     End If
                 Next c
             Next r
         Next table
+        
+        ' 集計シートへデータを追記
+        wsAggregate.Cells(destRow, 1).Value = folderPath
+        wsAggregate.Cells(destRow, 2).Value = cevText
+        wsAggregate.Cells(destRow, 3).Value = systemText
         
         ' ワード関連のオブジェクトを解放
         wordDoc.Close SaveChanges:=False
