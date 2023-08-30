@@ -6,8 +6,8 @@ Sub AggregateData()
     Dim targetFile As String
     Dim doc As Object
     Dim docText As String
-    Dim lines() As String
-    Dim line As String
+    Dim lines As Variant ' 配列として宣言
+    Dim i As Long ' インデックス
     
     ' ダイアログを表示してフォルダを選択
     With Application.FileDialog(msoFileDialogFolderPicker)
@@ -34,15 +34,16 @@ Sub AggregateData()
         ' 脆弱性調査シート内のテキストを取得
         docText = doc.ActiveDocument.Content.Text
         
-        ' "CEV-"を含む行を集計シートにコピー
+        ' "CEV-"を含む行を抽出して配列に格納
         lines = Split(docText, vbCrLf)
-        For Each line In lines
-            If InStr(line, "CEV-") > 0 Then
+        For i = LBound(lines) To UBound(lines)
+            If InStr(lines(i), "CEV-") > 0 Then
+                ' 集計シートに追加
                 wsAggregate.Cells(lastRow, 1).Value = targetFile
-                wsAggregate.Cells(lastRow, 2).Value = line
+                wsAggregate.Cells(lastRow, 2).Value = lines(i)
                 lastRow = lastRow + 1
             End If
-        Next line
+        Next i
         
         ' ワードファイルを閉じる
         doc.Quit
