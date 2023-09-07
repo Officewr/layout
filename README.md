@@ -64,3 +64,26 @@ Sub AggregateData()
         Set wordApp = Nothing
     Next row
 End Sub
+
+
+
+CMd
+Sub ExecuteCommands()
+
+    Dim cmdCell As Range
+    Dim cmd As String
+    Dim objShell As Object
+    
+    ' コマンド実行用のシェルオブジェクトを作成
+    Set objShell = CreateObject("WScript.Shell")
+    
+    ' A列の各セルに対してコマンドを実行
+    For Each cmdCell In ThisWorkbook.Sheets("シート名").Range("A1:A" & ThisWorkbook.Sheets("シート名").Cells(Rows.Count, 1).End(xlUp).Row)
+        cmd = cmdCell.Value
+        If cmd <> "" Then
+            ' コマンドを実行
+            objShell.Run "cmd /c " & cmd, 1, True
+        End If
+    Next cmdCell
+    Set objShell = Nothing
+End Sub
