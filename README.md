@@ -1,89 +1,40 @@
-Sub AggregateData()
+Sub メッセージ確認()
 
-    Dim wsSettings As Worksheet
-    Dim wsAggregate As Worksheet
-    Dim folderPath As String
-    Dim fileName As String
-    Dim targetFile As String
-    Dim wordApp As Object
-    Dim wordDoc As Object
-    Dim row As Long
-    Dim destRow As Long
-    Dim table As Object
+    Dim wsMessage As Worksheet
+    Dim wsTemplate As Worksheet
+    Dim lastRowMessage As Long
+    Dim lastRowTemplate As Long
+    Dim i As Long, j As Long
     
-    ' 設定シートと集計シートを取得
-    Set wsSettings = ThisWorkbook.Sheets("設定シート")
-    Set wsAggregate = ThisWorkbook.Sheets("集計シート")
+    ' ワークシートを設定
+    Set wsMessage = ThisWorkbook.Sheets("メッセージ確認シート")
+    Set wsTemplate = ThisWorkbook.Sheets("templateシート")
     
-    ' 設定シートの最終行を取得
-    lastRow = wsSettings.Cells(wsSettings.Rows.Count, "A").End(xlUp).Row
+    ' メッセージ確認シートの最終行を取得
+    lastRowMessage = wsMessage.Cells(wsMessage.Rows.Count, "B").End(xlUp).Row
     
-    ' フォルダごとにループ
-    For row = 2 To lastRow ' 2行目から開始（1行目はヘッダ）
-        folderPath = wsSettings.Cells(row, 1).Value
-        destRow = wsAggregate.Cells(wsAggregate.Rows.Count, "A").End(xlUp).Row + 1
+    ' templateシートの最終行を取得
+    lastRowTemplate = wsTemplate.Cells(wsTemplate.Rows.Count, "B").End(xlUp).Row
+    
+    ' メッセージ確認シートのB列からホスト名を取得し、templateシートで一致する行を探す
+    For i = 2 To lastRowMessage ' B列の2行目から始める（1行目はヘッダー）
+        Dim hostName As String
+        hostName = wsMessage.Cells(i, "B").Value
         
-        ' 該当ワードファイルを開く
-        fileName = "脆弱性調査シート.doc"
-        targetFile = folderPath & "\" & fileName
+        ' メッセージ確認シートのホスト名が未入力の場合、ループを終了
+        If hostName = "" Then Exit For
         
-        Set wordApp = CreateObject("Word.Application")
-        wordApp.Visible = False
-        Set wordDoc = wordApp.Documents.Open(targetFile)
-        
-        ' ワードファイル内のテキストを検索して集計シートへコピー
-        Dim cevText As String
-        For Each para In wordDoc.Paragraphs
-            If InStr(para.Range.Text, "CEV-") > 0 Then
-                cevText = cevText & para.Range.Text & vbNewLine
+        For j = 2 To lastRowTemplate ' templateシートの2行目から始める（1行目はヘッダー）
+            ' ホスト名が一致する場合
+            If hostName = wsTemplate.Cells(j, "B").Value Then
+                ' メッセージ確認シートのC列にメッセージをコピー
+                wsMessage.Cells(i, "C").Value = wsTemplate.Cells(j, "C").Value
+                Exit For ' 一致したらループを終了
             End If
-        Next para
-        
-        ' テーブルを検索して「対象システム」列を取得
-        Dim systemText As String
-        For Each table In wordDoc.Tables
-            For r = 1 To table.Rows.Count
-                For c = 1 To table.Columns.Count
-                    If InStr(table.Cell(r, c).Range.Text, "対象システム") > 0 Then
-                        systemText = table.Cell(r, c + 1).Range.Text
-                        Exit For
-                    End If
-                Next c
-            Next r
-        Next table
-        
-        ' 集計シートへデータを追記
-        wsAggregate.Cells(destRow, 1).Value = folderPath
-        wsAggregate.Cells(destRow, 2).Value = cevText
-        wsAggregate.Cells(destRow, 3).Value = systemText
-        
-        ' ワード関連のオブジェクトを解放
-        wordDoc.Close SaveChanges:=False
-        wordApp.Quit
-        Set wordDoc = Nothing
-        Set wordApp = Nothing
-    Next row
-End Sub
-
-
-
-CMd
-Sub ExecuteCommands()
-
-    Dim cmdCell As Range
-    Dim cmd As String
-    Dim objShell As Object
+        Next j
+    Next i
     
-    ' コマンド実行用のシェルオブジェクトを作成
-    Set objShell = CreateObject("WScript.Shell")
+    ' マクロの終了メッセージ
+    MsgBox "処理が完了しました。"
     
-    ' A列の各セルに対してコマンドを実行
-    For Each cmdCell In ThisWorkbook.Sheets("シート名").Range("A1:A" & ThisWorkbook.Sheets("シート名").Cells(Rows.Count, 1).End(xlUp).Row)
-        cmd = cmdCell.Value
-        If cmd <> "" Then
-            ' コマンドを実行
-            objShell.Run "cmd /c " & cmd, 1, True
-        End If
-    Next cmdCell
-    Set objShell = Nothing
 End Sub
